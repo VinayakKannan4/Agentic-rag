@@ -1,0 +1,25 @@
+# docker-compose files are used to define and run multi-container Docker applications.
+# In this project, we have two docker containers - one for the streamlit application and one for the qdrant storage.
+# We use the `docker-compose` file to allow both to run together / communicate with each other.
+
+services:
+  streamlit-app:
+    build:
+      context: . # this specifies the directory where the Dockerfile is located. In this case, it is the root directory of the project.
+      dockerfile: Dockerfile # this specifies the name of the Dockerfile to use.
+    ports:
+      - 8501:8501 # this maps port 8501 on the host to port 8501 on the container, which is the default port for Streamlit applications.
+    env_file:
+      - .env # this specifies the environment variables to use in the container. The .env file contains the necessary configuration for the Streamlit app.
+    restart: unless-stopped # this ensures that the container restarts automatically unless it is stopped manually.
+    volumes: # this mounts the application path to the container, allowing for live updates to the code without needing to rebuild the container.
+      - ./src/chatbot-ui:/app/src/chatbot-ui #Mounting the application which lives in './src/chatbot-ui' directory to the container and setting container path to app/src/chatbot-ui
+
+  qdrant:
+    image: qdrant/qdrant # this specifies the Docker image to use for the Qdrant service.
+    ports:
+      - 6333:6333 # this maps port 6333 on the host to port 6333 on the container, which is the default port for REST API.
+      - 6334:6334 # this maps port 6334 on the host to port 6334 on the container, which is the default port for gRPC API.
+    volumes:
+      - ./qdrant_storage:/qdrant/storage:z # this mounts the local directory './qdrant_storage' to the container's '/qdrant/storage' directory, allowing for persistent storage of Qdrant data.
+    restart: unless-stopped # this ensures that the container restarts automatically unless it is stopped manually.

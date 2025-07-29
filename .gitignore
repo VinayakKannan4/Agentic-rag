@@ -201,6 +201,9 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+data/
+qdrant_storage/
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
